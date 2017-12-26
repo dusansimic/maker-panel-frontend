@@ -6,3 +6,9 @@ install:
   - npm install
 script:
   - npm run build
+notifications:
+  slack:
+    rooms:
+      - jovinaiot:9lomQFlipvUP9HSZtOYrrm9m
+    on_success: never
+    on_failure: always
