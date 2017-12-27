@@ -73,14 +73,16 @@ export default {
 
 @media screen and (max-width: 767px) and (orientation: portrait) {
 	.Home {
-		width: 90%;
-		margin-left: calc((100% - 38%)/2);
+		width: 95%;
+		margin-left: calc((100% - 95%)/2);
 	}
 	.crumbsbox {
 		max-width: 100%;
+		margin-left: 0;
 	}
 	.cardColumns {
 		max-width: 100%;
+		margin-left: 0;
 	}
 }
 </style>

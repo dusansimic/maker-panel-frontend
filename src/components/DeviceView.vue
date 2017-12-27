@@ -2,20 +2,27 @@
 	<div class="DeviceView">
 		<b-breadcrumb :items="breadcrumbs" class="crumbsbox"></b-breadcrumb>
 		<b-card-group columns class="cardColumns">
-			<b-card :title="dataItem.name"
-							v-for="dataItem in dataItems" v-bind:key="dataItem.name">
-				<p class="card-text"></p>
+			<b-card :title="dataItem.label"
+							v-for="dataItem in dataItems" v-bind:key="dataItem.label">
+				<p class="card-text">
+					<line-chart :data="dataItem.data"></line-chart>
+				</p>
 			</b-card>
 		</b-card-group>
 	</div>
 </template>
 
 <script>
+import LineChart from './LineChart.js'
+
 export default {
 	name: 'DeviceView',
+	components: {
+		LineChart
+	},
 	data () {
 		return {
-			dataItems: [],
+			dataItems: {},
 			breadcrumbs: []
 		}
 	},
@@ -32,18 +39,20 @@ export default {
 			}).then(res => res.json()).then(data => {
 				for (let i = 0; i < data.length; i++) {
 					for (const dataItem in data[i].payload_fields) {
-						if (!this.findItem(dataItem)) {
-							this.dataItems.push({
-								name: dataItem,
-								data: [
-									data[i].payload_fields[dataItem]
-								]
-							})
-						} else {
-							this.dataItems[this.getItemIndex(dataItem)].data.push(data[i].payload_fields[dataItem])
+						if (!this.dataItems[dataItem]) {
+							const bg1 = Math.floor(Math.random() * 256);
+							const bg2 = Math.floor(Math.random() * 256);
+							const bg3 = Math.floor(Math.random() * 256);
+							this.dataItems[dataItem] = {
+								label: dataItem,
+								backgroundColor: `rgb(${bg1}, ${bg2}, ${bg3})`,
+								data: []
+							}
 						}
+						this.dataItems[dataItem].data.push(data[i].payload_fields[dataItem])
 					}
 				}
+				console.log(this.dataItems)
 			}).catch(err => {
 				console.error(err)
 			})
@@ -82,23 +91,8 @@ export default {
       ])
       this.makeCrumbs()
 		},
-		findItem (itemName) {
-			for (const item in this.dataItems) {
-				if (item.name === itemName) {
-					return true
-				}
-			}
-			return false
-		},
-		getItemIndex (itemName) {
-			let index = 0;
-			for (const item in this.dataItems) {
-				if (item.name === itemName) {
-					return index
-				}
-				index++
-			}
-			return -1
+		fillData () {
+			
 		}
 	},
 	created () {
@@ -113,5 +107,20 @@ export default {
 .crumbsbox {
 	max-width: 500px;
 	margin-left: calc((100% - 500px)/2);
+}
+
+@media screen and (max-width: 767px) and (orientation: portrait) {
+	.DeviceView {
+		width: 95%;
+		margin-left: calc((100% - 95%)/2);
+	}
+	.crumbsbox {
+		max-width: 100%;
+		margin-left: 0;
+	}
+	.cardColumns {
+		max-width: 100%;
+		margin-left: 0;
+	}
 }
 </style>

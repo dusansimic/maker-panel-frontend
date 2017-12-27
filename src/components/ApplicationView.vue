@@ -83,4 +83,19 @@ export default {
 	max-width: 500px;
 	margin-left: calc((100% - 500px)/2);
 }
+
+@media screen and (max-width: 767px) and (orientation: portrait) {
+	.ApplicationView {
+		width: 95%;
+		margin-left: calc((100% - 95%)/2);
+	}
+	.crumbsbox {
+		max-width: 100%;
+		margin-left: 0;
+	}
+	.cardColumns {
+		max-width: 100%;
+		margin-left: 0;
+	}
+}
 </style>
