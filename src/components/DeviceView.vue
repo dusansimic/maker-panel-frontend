@@ -1,12 +1,14 @@
 <template>
 	<div class="DeviceView">
 		<b-breadcrumb :items="breadcrumbs" class="crumbsbox"></b-breadcrumb>
-		<!-- <trend
-			:data="[5, 2, 8, 5, 10, 4]"
-			auto-draw
-			smooth>
-		</trend> -->
-		<line-chart :chartData="dataItems['ppm']" :options="chartOptions"></line-chart>
+		<div>
+			<line-chart :chartData="dataItems['ppm']" :options="chartOptions"></line-chart>
+		</div>
+		<!-- 
+			Workaround for reloading data
+			VERY IMPORTANT
+		 -->
+		<div v-if="reloadData"></div>
 	</div>
 </template>
 
@@ -22,6 +24,7 @@ export default {
 		return {
 			rawData: [],
 			dataItems: {},
+			reloadData: false,
 			breadcrumbs: [],
 			chartOptions: {
 				responsive: true,
@@ -31,37 +34,7 @@ export default {
 	},
 	methods: {
 		onStart () {
-			const applicationId = this.$session.get('applicationId')
-			const deviceId = this.$session.get('deviceId')
-			let date = new Date()
-			date.setDate(date.getDate() - .2)
-
-			fetch(`${this.$config.apiUrl}/api/rest/${applicationId}/device/${deviceId}?time=${date.toISOString()}`, {
-				method: 'GET'
-			}).then(res => res.json()).then(data => {
-				for (let i = 0; i < data.length; i++) {
-					for (const dataItem in data[i].payload_fields) {
-						if (!this.dataItems[dataItem]) {
-							const bg1 = Math.floor(Math.random() * 256)
-							const bg2 = Math.floor(Math.random() * 256)
-							const bg3 = Math.floor(Math.random() * 256)
-							this.dataItems[dataItem] = {
-								labels: [],
-								datasets: [{
-									label: dataItem,
-									backgroundColor: `rgb(${bg1}, ${bg2}, ${bg3})`,
-									data: []
-								}]
-							}
-						}
-						this.dataItems[dataItem].datasets[0].data.push(data[i].payload_fields[dataItem])
-						this.dataItems[dataItem].labels.push(this.$moment(data[i].metadata.time).format('D. M. YYYY. HH:mm:ss'))
-					}
-				}
-			}).catch(err => {
-				console.error(err)
-			})
-			getData()
+			this.getData()
 		},
 		clearCrumbs () {
 			if (this.$session.get('crumbs')) {
@@ -98,6 +71,39 @@ export default {
       this.makeCrumbs()
 		},
 		getData () {
+			const applicationId = this.$session.get('applicationId')
+			const deviceId = this.$session.get('deviceId')
+			let date = new Date()
+			date.setDate(date.getDate() - .2)
+
+			fetch(`${this.$config.apiUrl}/api/rest/${applicationId}/device/${deviceId}?time=${date.toISOString()}`, {
+				method: 'GET'
+			}).then(res => res.json()).then(data => {
+				for (let i = 0; i < data.length; i++) {
+					for (const dataItem in data[i].payload_fields) {
+						if (!this.dataItems[dataItem]) {
+							const bg1 = Math.floor(Math.random() * 256)
+							const bg2 = Math.floor(Math.random() * 256)
+							const bg3 = Math.floor(Math.random() * 256)
+							this.dataItems[dataItem] = {
+								labels: [],
+								datasets: [{
+									label: dataItem,
+									backgroundColor: `rgb(${bg1}, ${bg2}, ${bg3})`,
+									data: []
+								}]
+							}
+						}
+						this.dataItems[dataItem].datasets[0].data.push(data[i].payload_fields[dataItem])
+						this.dataItems[dataItem].labels.push(this.$moment(data[i].metadata.time).format('D. M. YYYY. HH:mm:ss'))
+						// Workaround for reloading data
+						// VERY IMPORTANT
+						this.reloadData = !this.reloadData
+					}
+				}
+			}).catch(err => {
+				console.error(err)
+			})
 		}
 	},
 	mounted () {
