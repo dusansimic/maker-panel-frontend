@@ -1,14 +1,12 @@
 <template>
 	<div class="DeviceView">
 		<b-breadcrumb :items="breadcrumbs" class="crumbsbox"></b-breadcrumb>
-		<b-card-group columns class="cardColumns">
-			<b-card :title="dataItem.label"
-							v-for="dataItem in dataItems" v-bind:key="dataItem.label">
-				<p class="card-text">
-					<line-chart :data="dataItem.data"></line-chart>
-				</p>
-			</b-card>
-		</b-card-group>
+		<!-- <trend
+			:data="[5, 2, 8, 5, 10, 4]"
+			auto-draw
+			smooth>
+		</trend> -->
+		<line-chart :chartData="dataItems['ppm']" :options="chartOptions"></line-chart>
 	</div>
 </template>
 
@@ -22,40 +20,48 @@ export default {
 	},
 	data () {
 		return {
+			rawData: [],
 			dataItems: {},
-			breadcrumbs: []
+			breadcrumbs: [],
+			chartOptions: {
+				responsive: true,
+				maintaintAspectRatio: false
+			}
 		}
 	},
 	methods: {
 		onStart () {
 			const applicationId = this.$session.get('applicationId')
 			const deviceId = this.$session.get('deviceId')
+			let date = new Date()
+			date.setDate(date.getDate() - .2)
 
-			fetch(`${this.$config.apiUrl}/api/rest/${applicationId}/device/${deviceId}`, {
-				method: 'GET',
-				headers: new Headers({
-					'Content-Type': 'application/json'
-				})
+			fetch(`${this.$config.apiUrl}/api/rest/${applicationId}/device/${deviceId}?time=${date.toISOString()}`, {
+				method: 'GET'
 			}).then(res => res.json()).then(data => {
 				for (let i = 0; i < data.length; i++) {
 					for (const dataItem in data[i].payload_fields) {
 						if (!this.dataItems[dataItem]) {
-							const bg1 = Math.floor(Math.random() * 256);
-							const bg2 = Math.floor(Math.random() * 256);
-							const bg3 = Math.floor(Math.random() * 256);
+							const bg1 = Math.floor(Math.random() * 256)
+							const bg2 = Math.floor(Math.random() * 256)
+							const bg3 = Math.floor(Math.random() * 256)
 							this.dataItems[dataItem] = {
-								label: dataItem,
-								backgroundColor: `rgb(${bg1}, ${bg2}, ${bg3})`,
-								data: []
+								labels: [],
+								datasets: [{
+									label: dataItem,
+									backgroundColor: `rgb(${bg1}, ${bg2}, ${bg3})`,
+									data: []
+								}]
 							}
 						}
-						this.dataItems[dataItem].data.push(data[i].payload_fields[dataItem])
+						this.dataItems[dataItem].datasets[0].data.push(data[i].payload_fields[dataItem])
+						this.dataItems[dataItem].labels.push(this.$moment(data[i].metadata.time).format('D. M. YYYY. HH:mm:ss'))
 					}
 				}
-				console.log(this.dataItems)
 			}).catch(err => {
 				console.error(err)
 			})
+			getData()
 		},
 		clearCrumbs () {
 			if (this.$session.get('crumbs')) {
@@ -91,11 +97,10 @@ export default {
       ])
       this.makeCrumbs()
 		},
-		fillData () {
-			
+		getData () {
 		}
 	},
-	created () {
+	mounted () {
 		this.clearCrumbs()
 		this.makeCrumbs()
 		this.onStart()
