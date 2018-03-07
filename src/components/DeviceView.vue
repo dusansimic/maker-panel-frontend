@@ -1,9 +1,7 @@
 <template>
 	<div class="DeviceView">
 		<b-breadcrumb :items="breadcrumbs" class="crumbsbox"></b-breadcrumb>
-		<div>
-			<line-chart :chartData="dataItems['ppm']" :options="chartOptions"></line-chart>
-		</div>
+		<line-chart :chartData="dataItems['ppm']" :options="chartOptions['ppm']"></line-chart>
 		<!-- 
 			Workaround for reloading data
 			VERY IMPORTANT
@@ -13,7 +11,7 @@
 </template>
 
 <script>
-import LineChart from './LineChart.js'
+import LineChart from './LineChart'
 
 export default {
 	name: 'DeviceView',
@@ -27,14 +25,32 @@ export default {
 			reloadData: false,
 			breadcrumbs: [],
 			chartOptions: {
-				responsive: true,
-				maintaintAspectRatio: false
+				ppm: {
+					responsive: true,
+					maintaintAspectRatio: false,
+					scales: {
+						yAxes: [{
+							ticks: {
+								suggestedMin: 0,
+								suggestedMax: 40
+							}
+						}]
+					},
+					pan: {
+						enabled: true,
+						mode: 'x'
+					},
+					zoom: {
+						enabled: true,
+						mode: 'x'
+					}
+				}
 			}
 		}
 	},
 	methods: {
 		onStart () {
-			this.getData()
+			setInterval(this.getData(), 60*1000)
 		},
 		clearCrumbs () {
 			if (this.$session.get('crumbs')) {
@@ -74,7 +90,7 @@ export default {
 			const applicationId = this.$session.get('applicationId')
 			const deviceId = this.$session.get('deviceId')
 			let date = new Date()
-			date.setDate(date.getDate() - .2)
+			date.setDate(date.getDate() - .03)
 
 			fetch(`${this.$config.apiUrl}/api/rest/${applicationId}/device/${deviceId}?time=${date.toISOString()}`, {
 				method: 'GET'
