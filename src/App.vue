@@ -5,8 +5,8 @@
 
       <b-collapse is-nav id="nav_collapse">
         <b-navbar-nav>
-          <b-nav-item to="/">Home</b-nav-item>
-          <b-nav-item to="/about">About</b-nav-item>
+          <b-nav-item to="/" exact>Home</b-nav-item>
+          <b-nav-item to="/about" exact>About</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
 
@@ -17,6 +17,9 @@
       <br/>
       <router-view id="router_view"/>
     </div>
+    <footer>
+      <p>Developed by <a href="http://dusansimic.me">Dušan Simić</a>, Vladimir Krsmanović and Ljubomir Gojković</p>
+    </footer>
   </div>
 </template>
 
@@ -35,13 +38,28 @@ export default {
   margin-top: 10px;
 }
 #wrapper {
-  max-width: 700px;
-  margin-left: calc((100% - 700px)/2);
+  max-width: 1024px;
+  margin-left: calc((100% - 1024px)/2);
 }
 #navbar {
-  max-width: 700px;
-  margin-left: calc((100% - 700px)/2);
+  max-width: 1024px;
+  margin-left: calc((100% - 1024px)/2);
   border-radius: 5px;
+}
+footer {
+  text-align: center;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+footer p {
+  font-size: 1.1em;
+}
+
+@media screen and (max-width: 1023px) {
+  #wrapper, #navbar {
+    max-width: 768px;
+    margin-left: calc((100% - 768px)/2);
+  }
 }
 
 @media screen and (max-width: 767px) {

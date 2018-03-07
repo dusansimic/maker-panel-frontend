@@ -66,15 +66,26 @@ export default {
 </script>
 
 <style>
+.Home {
+  max-width: 1024px;
+  margin-left: calc((100% - 1024px)/2);
+}
 .crumbsbox {
-	max-width: 500px;
-	margin-left: calc((100% - 500px)/2);
+	max-width: 600px;
+	margin-left: calc((100% - 600px)/2);
+}
+
+@media screen and (max-width: 1023px) {
+  .Home {
+    max-width: 768px;
+    margin-left: calc((100% - 768px)/2);
+  }
 }
 
 @media screen and (max-width: 767px) and (orientation: portrait) {
 	.Home {
-		width: 95%;
-		margin-left: calc((100% - 95%)/2);
+		width: 100%;
+		margin-left: 0;
 	}
 	.crumbsbox {
 		max-width: 100%;
