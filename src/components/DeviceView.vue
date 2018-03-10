@@ -188,11 +188,11 @@ export default {
 						this.dataItems[dataItem].datasets[0].data.push(data[i].payload_fields[dataItem])
 						// this.dataItems[dataItem].labels.push(this.$moment(data[i].metadata.time).format('D. M. YYYY. HH:mm:ss'))
 						this.dataItems[dataItem].labels.push(this.$moment(data[i].metadata.time).format('HH:mm:ss'))
+						// Workaround for reloading data
+						// VERY IMPORTANT
+						this.reloadData = !this.reloadData
 					}
 				}
-				// Workaround for reloading data
-				// VERY IMPORTANT
-				this.reloadData = !this.reloadData
 			}).catch(err => {
 				console.error(err)
 			})
