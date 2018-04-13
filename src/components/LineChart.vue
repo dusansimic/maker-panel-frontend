@@ -2,7 +2,8 @@
 import {Line, mixins} from 'vue-chartjs'
 const {reactiveProp} = mixins
 
-export default Line.extend({
+export default {
+	extends: Line,
 	mixins: [reactiveProp],
 	data () {
 		return {
@@ -31,5 +32,5 @@ export default Line.extend({
 	mounted () {
 		this.renderChart(this.chartData, this.options)
 	}
-})
+}
 </script>

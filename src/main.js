@@ -9,12 +9,10 @@ import VueSession from 'vue-session'
 import config from './config.json'
 import moment from 'moment'
 import VueMoment from 'vue-momentjs'
-import Trend from 'vuetrend'
 
 Vue.use(BootstrapVue)
 Vue.use(VueSession)
 Vue.use(VueMoment, moment)
-Vue.use(Trend)
 
 Vue.prototype.$config = config
 

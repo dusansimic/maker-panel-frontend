@@ -21,6 +21,18 @@
 				<line-chart :chartData="dataItems['ppm']" :options="chartOptions['ppm']" :plugins="[chartjsPluginZoom]"></line-chart>
 			</p>
 		</b-card>
+		<gmap-map
+			:center="location"
+			:zoom="17"
+			class="card"
+			style="height: 500px;">
+			<gmap-marker
+				:position="location"
+				:clickable="true"
+				:draggable="true"
+				@click="center = location">
+			</gmap-marker>
+		</gmap-map>
 		<!-- 
 			Workaround for reloading data
 			VERY IMPORTANT
@@ -30,8 +42,16 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import LineChart from './LineChart'
 import * as chartjsPluginZoom from 'chartjs-plugin-zoom'
+import * as VueGoogleMaps from 'vue2-google-maps'
+
+Vue.use(VueGoogleMaps, {
+	load: {
+		key: 'AIzaSyBQKLz6i7ZKOQlY_t2wnFRNcU-tqSEp4Lo'
+	}
+})
 
 export default {
 	name: 'DeviceView',
@@ -43,6 +63,7 @@ export default {
 			dataItems: {},
 			reloadData: false,
 			breadcrumbs: [],
+			location: {lat: 44.8056525, lng: 20.4646229},
 			chartOptions: {
 				ppm: {
 					title: {
@@ -187,7 +208,7 @@ export default {
 						}
 						this.dataItems[dataItem].datasets[0].data.push(data[i].payload_fields[dataItem])
 						// this.dataItems[dataItem].labels.push(this.$moment(data[i].metadata.time).format('D. M. YYYY. HH:mm:ss'))
-						this.dataItems[dataItem].labels.push(this.$moment(data[i].metadata.time).format('HH:mm:ss'))
+						this.dataItems[dataItem].labels.push(this.$moment(data[i].metadata.time).format('HH:mm'))
 						// Workaround for reloading data
 						// VERY IMPORTANT
 						this.reloadData = !this.reloadData
